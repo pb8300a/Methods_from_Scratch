@@ -5,6 +5,7 @@ y = c(0,1,1,0)
 rand_vector = runif(ncol(X)*nrow(X))
 rand_matrix = matrix(rand_vector, ncol = nrow(X),nrow = ncol(X), byrow = TRUE)
 
+#create w1 and w2
 my_nn = list(
         input = X,
         weights1 = rand_matrix,
@@ -19,6 +20,7 @@ sigmoid = function(x){
         1/(1+exp(-x))
 }
 
+#Derivative of Activation function
 sigmoid_derivative = function(x){
         x*(1-x)
 }
@@ -35,18 +37,19 @@ feedforward = function(nn){
         return(nn)
 }
 
+#Back propogation function
 backprop = function(nn){
-       d_weights2 = (t(nn$layer1) %*%  (2*(nn$y - nn$output) * sigmoid_derivative(nn$output)))
-       d_weights1 = (2*(nn$y - nn$output) * sigmoid_derivative(nn$output)) %*% t(nn$weights2)
+       d_weights2 = (t(nn$layer1) %*%  (2*(nn$y - nn$output) * sigmoid_derivative(nn$output))) #dLogLoss/dw2
+       d_weights1 = (2*(nn$y - nn$output) * sigmoid_derivative(nn$output)) %*% t(nn$weights2)  #dLogLoss/dw1
        d_weights1 = d_weights1*sigmoid_derivative(nn$layer1)
        d_weights1 = t(nn$input) %*% d_weights1
        
-       nn$weights1 = nn$weights1 + d_weights1
-       nn$weights2 = nn$weights2 + d_weights2
+       nn$weights1 = nn$weights1 + d_weights1  #new_w1 = old_w1 + dLogLoss/dw1
+       nn$weights2 = nn$weights2 + d_weights2  #new_w2 = old_w2 + dLogLoss/dw2
        return(nn)
 }
 
-
+#Example
 n = 1500
 loss_df = data.frame(iteration = 1:n,loss = vector("numeric",length = n))
 
